@@ -7,13 +7,33 @@ app = Flask(__name__)
 CORS(app)
 
 def get_db_connection():
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect('database.db', check_same_thread=False)
     conn.row_factory = sqlite3.Row
     return conn
 
-@app.route('/api/hello', methods=['GET'])
-def hello():
-    return jsonify(message='Hello from Python!')
+# Get up to 20 recent messages for the feed
+@app.route('/api/messages', methods=['GET'])
+def get_messages():
+    conn = get_db_connection()
+    messages = conn.execute('''
+        SELECT messages.id, messages.message, messages.user_id, profiles.name as username
+        FROM messages
+        JOIN profiles ON messages.user_id = profiles.id
+        ORDER BY messages.id DESC
+        LIMIT 20
+    ''').fetchall()
+    conn.close()
+    return jsonify([dict(row) for row in messages])
+
+# Add a new message
+@app.route('/api/messages', methods=['POST'])
+def add_message():
+    data = request.get_json()
+    conn = get_db_connection()
+    conn.execute('INSERT INTO messages (user_id, message) VALUES (?, ?)', (data['user_id'], data['message']))
+    conn.commit()
+    conn.close()
+    return jsonify({'status': 'Message added'}), 201
 
 @app.route('/api/profiles', methods=['GET'])
 def get_profiles():
@@ -50,9 +70,10 @@ def register():
     data = request.get_json()
     conn = get_db_connection()
     try:
-        conn.execute('INSERT INTO profiles (name, password) VALUES (?, ?)', (data['name'], data['password']))
+        cursor = conn.execute('INSERT INTO profiles (name, password) VALUES (?, ?)', (data['name'], data['password']))
         conn.commit()
-        result = {'status': 'Profile registered'}
+        user_id = cursor.lastrowid
+        result = {'status': 'Profile registered', 'user_id': user_id, 'username': data['name']}
         status = 201
     except sqlite3.IntegrityError:
         result = {'error': 'Username already exists'}
@@ -71,6 +92,7 @@ def login():
         return jsonify({'status': 'Login successful', 'user_id': user['id'], 'username': user['name']}), 200
     else:
         return jsonify({'error': 'Invalid username or password'}), 401
+
 @app.route('/api/posts', methods=['POST'])
 def add_post():
     data = request.get_json()

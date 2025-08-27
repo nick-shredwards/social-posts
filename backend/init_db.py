@@ -22,5 +22,16 @@ CREATE TABLE IF NOT EXISTS posts (
 )
 ''')
 
+
+# Create messages table
+c.execute('''
+CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    message TEXT NOT NULL,
+    FOREIGN KEY(user_id) REFERENCES profiles(id)
+)
+''')
+
 conn.commit()
 conn.close()

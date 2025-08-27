@@ -22,7 +22,7 @@ export default function Login({ onLogin }) {
           if (mode === 'login') {
             onLogin({ userId: data.user_id, username: data.username });
           } else {
-            onLogin({ userId: null, username });
+            onLogin({ userId: data.user_id, username: data.username });
           }
         }
       } else {
