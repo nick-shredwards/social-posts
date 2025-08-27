@@ -33,11 +33,44 @@ def get_posts():
 def add_profile():
     data = request.get_json()
     conn = get_db_connection()
-    conn.execute('INSERT INTO profiles (name, email) VALUES (?, ?)', (data['name'], data['email']))
-    conn.commit()
+    try:
+        conn.execute('INSERT INTO profiles (name, password) VALUES (?, ?)', (data['name'], data['password']))
+        conn.commit()
+        result = {'status': 'Profile added'}
+        status = 201
+    except sqlite3.IntegrityError:
+        result = {'error': 'Username already exists'}
+        status = 400
     conn.close()
-    return jsonify({'status': 'Profile added'}), 201
+    return jsonify(result), status
 
+# Register endpoint
+@app.route('/api/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    conn = get_db_connection()
+    try:
+        conn.execute('INSERT INTO profiles (name, password) VALUES (?, ?)', (data['name'], data['password']))
+        conn.commit()
+        result = {'status': 'Profile registered'}
+        status = 201
+    except sqlite3.IntegrityError:
+        result = {'error': 'Username already exists'}
+        status = 400
+    conn.close()
+    return jsonify(result), status
+
+# Login endpoint
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    conn = get_db_connection()
+    user = conn.execute('SELECT * FROM profiles WHERE name = ?', (data['name'],)).fetchone()
+    conn.close()
+    if user and user['password'] == data['password']:
+        return jsonify({'status': 'Login successful', 'user_id': user['id']}), 200
+    else:
+        return jsonify({'error': 'Invalid username or password'}), 401
 @app.route('/api/posts', methods=['POST'])
 def add_post():
     data = request.get_json()
