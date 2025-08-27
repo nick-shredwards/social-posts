@@ -46,12 +46,14 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
+
 Install backend dependencies:
 
 ```bash
 cd backend
 pip install -r requirements.txt
 ```
+
 
 #### On Windows:
 
@@ -68,6 +70,15 @@ Install backend dependencies:
 cd backend
 pip install -r requirements.txt
 ```
+### 4. Initialize the Database
+
+Before running the backend server for the first time, you must create the database tables:
+
+```bash
+python init_db.py
+```
+
+This will create the required `database.db` file with the necessary tables.
 
 ## Starting the Servers
 

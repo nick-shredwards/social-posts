@@ -1,26 +1,28 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 import Login from './Login.jsx'
 
 function App() {
   const [count, setCount] = useState(0)
-  const [username, setUsername] = useState(null)
+  const [user, setUser] = useState(null)
 
-  if (!username) {
-    return <Login onLogin={setUsername} />
+  if (!user) {
+    return <Login onLogin={setUser} />
   }
 
   return (
     <>
-      <h1>Welcome, {username}</h1>
+      <div className="logout-container">
+        <button className="logout-btn" onClick={() => setUser(null)}>
+          Logout
+        </button>
+      </div>
+      <h1>Welcome, {user.username}</h1>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
-
       </div>
     </>
   )

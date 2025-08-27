@@ -18,7 +18,13 @@ export default function Login({ onLogin }) {
       });
       const data = await res.json();
       if (res.ok) {
-        if (onLogin) onLogin(username);
+        if (onLogin) {
+          if (mode === 'login') {
+            onLogin({ userId: data.user_id, username: data.username });
+          } else {
+            onLogin({ userId: null, username });
+          }
+        }
       } else {
         setError(data.error || 'Unknown error');
       }

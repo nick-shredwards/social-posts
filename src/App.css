@@ -1,3 +1,25 @@
+/* Logout button top right styling */
+.logout-container {
+  position: absolute;
+  top: 1em;
+  right: 2em;
+  z-index: 100;
+}
+
+.logout-btn {
+  padding: 0.5em 1.2em;
+  background: #646cff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: background 0.2s;
+}
+.logout-btn:hover {
+  background: #4b52b6;
+}
 #root {
   max-width: 1280px;
   margin: 0 auto;

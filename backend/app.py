@@ -68,7 +68,7 @@ def login():
     user = conn.execute('SELECT * FROM profiles WHERE name = ?', (data['name'],)).fetchone()
     conn.close()
     if user and user['password'] == data['password']:
-        return jsonify({'status': 'Login successful', 'user_id': user['id']}), 200
+        return jsonify({'status': 'Login successful', 'user_id': user['id'], 'username': user['name']}), 200
     else:
         return jsonify({'error': 'Invalid username or password'}), 401
 @app.route('/api/posts', methods=['POST'])
